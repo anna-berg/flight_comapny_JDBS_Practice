@@ -3,10 +3,7 @@ import util.ConnectionManager;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class BlobRunner {
     public static void main(String[] args) throws SQLException, IOException {
@@ -21,12 +18,21 @@ public class BlobRunner {
         saveImage();
     }
 
-    private static void getImage(){
+    private static void getImage() throws SQLException {
         var sql = """
-                UPDATE aircraft
-                SET image = ?
-                WHERE id = 1
+                SELECT image
+                FROM aircraft
+                WHERE id = ?
                 """;
+        try (var connection = ConnectionManager.open();
+             var statement = connection.prepareStatement(sql)) {
+            statement.setInt(1,1);
+            var resultSet = statement.executeQuery();
+            if (resultSet.next()){
+                resultSet.getByte("image");
+                Files.write(Path.of(("resources", "Boeing_777_new.jpg"));
+            }
+        }
     }
 
     private static void saveImage() throws SQLException, IOException {

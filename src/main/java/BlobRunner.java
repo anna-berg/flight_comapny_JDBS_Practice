@@ -36,6 +36,7 @@ public class BlobRunner {
 
             preparedStatement.setBlob(1,blob);
             preparedStatement.executeUpdate();
+            connection.commit();
         }
     }
 }

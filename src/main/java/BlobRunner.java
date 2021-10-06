@@ -3,6 +3,7 @@ import util.ConnectionManager;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.sql.*;
 
 public class BlobRunner {
@@ -16,21 +17,22 @@ public class BlobRunner {
         // в postgresql он представлен в виде TEXT
 
         saveImage();
+        getImage();
     }
 
-    private static void getImage() throws SQLException {
+    private static void getImage() throws SQLException, IOException {
         var sql = """
                 SELECT image
                 FROM aircraft
                 WHERE id = ?
                 """;
-        try (var connection = ConnectionManager.open();
+        try (var connection = ConnectionManager.get();
              var statement = connection.prepareStatement(sql)) {
             statement.setInt(1,1);
             var resultSet = statement.executeQuery();
             if (resultSet.next()){
-                resultSet.getByte("image");
-                Files.write(Path.of(("resources", "Boeing_777_new.jpg"));
+                var image = resultSet.getBytes("image");
+                Files.write(Path.of("resources", "Boeing_777_new.jpg"), image, StandardOpenOption.CREATE);
             }
         }
     }
@@ -43,7 +45,7 @@ public class BlobRunner {
                 WHERE id = 1
                 """;
 
-        try (var connection = ConnectionManager.open();
+        try (var connection = ConnectionManager.get();
              var preparedStatement = connection.prepareStatement(sql)) {
 
 

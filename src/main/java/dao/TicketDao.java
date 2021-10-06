@@ -13,8 +13,9 @@ import java.util.Optional;
 
 import static java.util.stream.Collectors.*;
 
-public class TicketDao {
+public class TicketDao implements Dao <Long, TicketEntity> {
     public static final TicketDao INSTANCE = new TicketDao();
+    private final FlightDao flightDao = FlightDao.getInstance();
     public static final String DELETE_SQL = """
             DELETE FROM ticket
             WHERE id = ?
@@ -41,6 +42,7 @@ public class TicketDao {
                     flight_id, 
                     seat_no, 
                     cost,
+                    f.flight_no,
                     f.status,
                     f.aircraft_id,
                     f.arrival_airport_code,
@@ -137,7 +139,8 @@ public class TicketDao {
                 resultSet.getLong("id"),
                 resultSet.getString("passenger_no"),
                 resultSet.getString("passenger_name"),
-                flight,
+                flightDao.findById(resultSet.getLong("flight_id"),
+                        resultSet.getStatement().getConnection()).orElse(null),
                 resultSet.getString("seat_no"),
                 resultSet.getBigDecimal("cost")
         );

@@ -29,7 +29,7 @@ public class TicketEntity {
                 "id=" + id +
                 ", passengerNo='" + passengerNo + '\'' +
                 ", passengerName='" + passengerName + '\'' +
-                ", flightId=" + flight +
+                ", flight=" + flight +
                 ", seatNo='" + seatNo + '\'' +
                 ", cost=" + cost +
                 '}';
